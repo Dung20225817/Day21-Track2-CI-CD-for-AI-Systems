@@ -1,7 +1,10 @@
 # Sieu tham so cho mo hinh RandomForestClassifier
 # Thay doi cac gia tri nay giua cac lan chay de thi nghiem (Buoc 1)
+# Chú ý: max_depth: ~ (tilde) biểu diễn None/null trong YAML
 model_type: random_forest
 n_estimators: 300
-max_depth: null
+max_depth: ~  # Tilde (~) means None/unlimited depth in YAML
 min_samples_split: 2
 min_samples_leaf: 1
+max_features: sqrt
+bootstrap: true
