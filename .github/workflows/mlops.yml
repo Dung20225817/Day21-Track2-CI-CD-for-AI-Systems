@@ -256,9 +256,7 @@ jobs:
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
           envs: AWS_S3_BUCKET,AWS_REGION
-        env:
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
+          envs_format: "$AWS_S3_BUCKET\n$AWS_REGION"
         script: |
           # Restart mlops-serve service on the VM
           sudo systemctl restart mlops-serve
