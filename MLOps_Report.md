@@ -1,7 +1,7 @@
 # MLOps Lab Report — Day 21: CI/CD for AI Systems
 
 **Họ và tên:** Pham Quoc Dung  
-**MSSV:** 20225817  
+**MSSV:** 2A202600490  
 **Repo:** https://github.com/Dung20225817/Day21-Track2-CI-CD-for-AI-Systems
 
 ---
