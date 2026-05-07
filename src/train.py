@@ -32,6 +32,9 @@ def get_model(model_type: str, params: dict):
         max_iter_val = params.get("max_iter", 1000)
         return LogisticRegression(random_state=42, max_iter=max_iter_val, **ml_params)
     elif model_type == "random_forest":
+        # Add class_weight='balanced' if not already in params
+        if "class_weight" not in params:
+            params["class_weight"] = "balanced"
         return RandomForestClassifier(**params, random_state=42)
     else:
         raise ValueError(f"Unknown model_type: {model_type}")
@@ -147,7 +150,15 @@ def train(
     label_dist = _check_data_drift(df_train_check["target"])
 
     # Đọc dữ liệu huấn luyện và đánh giá
+    # Use both phase1 and phase2 training data for more training samples
     df_train = pd.read_csv(data_path)
+    phase2_path = data_path.replace("phase1", "phase2")
+    if os.path.exists(phase2_path):
+        df_train_phase2 = pd.read_csv(phase2_path)
+        df_train = pd.concat([df_train, df_train_phase2], ignore_index=True)
+        print(f"Combined training data: {len(df_train)} samples (phase1 + phase2)")
+    else:
+        print(f"Training data: {len(df_train)} samples")
     df_eval = pd.read_csv(eval_path)
 
     # Tách đặc trưng và nhãn
