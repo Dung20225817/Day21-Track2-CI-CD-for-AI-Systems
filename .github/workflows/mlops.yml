@@ -249,31 +249,13 @@ jobs:
     needs: eval
     runs-on: ubuntu-latest
     steps:
-      - name: SSH deploy to VM
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.VM_HOST }}
-          username: ${{ secrets.VM_USER }}
-          key: ${{ secrets.VM_SSH_KEY }}
-          envs: AWS_S3_BUCKET,AWS_REGION
-          envs_format: "$AWS_S3_BUCKET\n$AWS_REGION"
-        script: |
-          # Restart mlops-serve service on the VM
-          sudo systemctl restart mlops-serve
-
-          # Wait for server to be ready
-          sleep 10
-
-          # Health check with retries
-          for i in $(seq 1 5); do
-            if curl -sf http://localhost:8000/health; then
-              echo "Health check passed."
-              exit 0
-            fi
-            echo "Attempt $i failed, waiting 5 seconds..."
-            sleep 5
-          done
-
-          echo "Health check failed after 5 attempts."
-          sudo journalctl -u mlops-serve -n 20 --no-pager || true
-          exit 1
+      - name: Restart mlops-serve on VM
+        env:
+          VM_HOST: ${{ secrets.VM_HOST }}
+          VM_USER: ${{ secrets.VM_USER }}
+          VM_SSH_KEY: ${{ secrets.VM_SSH_KEY }}
+        run: |
+          echo "$VM_SSH_KEY" > /tmp/deploy_key && chmod 600 /tmp/deploy_key
+          ssh -o StrictHostKeyChecking=no -o ConnectTimeout=10 -i /tmp/deploy_key "$VM_USER@$VM_HOST" \
+            "sudo systemctl restart mlops-serve && sleep 10 && curl -sf http://localhost:8000/health && echo 'Health check passed.'" || \
+            { echo "Deploy failed. Showing service logs:"; ssh -o StrictHostKeyChecking=no -i /tmp/deploy_key "$VM_USER@$VM_HOST" "sudo journalctl -u mlops-serve -n 20 --no-pager" || true; exit 1; }
