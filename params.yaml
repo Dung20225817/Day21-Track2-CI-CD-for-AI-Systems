@@ -1,8 +1,8 @@
-# Tuned Random Forest for better performance
+# Tuned Random Forest - optimized for accuracy
 model_type: random_forest
-n_estimators: 300
-max_depth: ~
-min_samples_split: 2
-min_samples_leaf: 1
+n_estimators: 500
+max_depth: null
+min_samples_split: 3
+min_samples_leaf: 2
 max_features: sqrt
 bootstrap: false
