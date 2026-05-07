@@ -2,7 +2,7 @@ name: MLOps Pipeline
 
 on:
   push:
-    branches: [main]
+    branches: [clean-main]
     paths:
       - 'data/**.dvc'
       - 'src/**.py'
@@ -179,7 +179,7 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         run: |
           python - <<'EOF'
           import json
@@ -224,7 +224,7 @@ jobs:
 
           # Upload final metrics to S3 for next-run comparison
           import boto3
-          bucket = os.environ.get("BUCKET", "")
+          bucket = os.environ.get("AWS_S3_BUCKET", "")
           if bucket:
               s3 = boto3.client("s3")
               s3.upload_file(
@@ -255,11 +255,10 @@ jobs:
           host: ${{ secrets.VM_HOST }}
           username: ${{ secrets.VM_USER }}
           key: ${{ secrets.VM_SSH_KEY }}
-          envs: AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_S3_BUCKET
+          envs: AWS_S3_BUCKET,AWS_REGION
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
         script: |
           # Restart mlops-serve service on the VM
           sudo systemctl restart mlops-serve

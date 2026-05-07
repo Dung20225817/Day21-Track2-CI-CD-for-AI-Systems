@@ -38,7 +38,7 @@ pip3 install --user fastapi uvicorn scikit-learn joblib boto3
 
 echo "Step 5: Downloading serve.py..."
 cd ~/src
-curl -O https://raw.githubusercontent.com/Dung20225817/Day21-Track2-CI-CD-for-AI-Systems/master/src/serve.py
+curl -O https://raw.githubusercontent.com/Dung20225817/Day21-Track2-CI-CD-for-AI-Systems/clean-main/src/serve.py
 
 echo "Step 6: Creating systemd service..."
 sudo tee /etc/systemd/system/mlops-serve.service > /dev/null <<EOF
