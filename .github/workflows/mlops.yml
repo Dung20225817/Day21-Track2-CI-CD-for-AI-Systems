@@ -181,6 +181,10 @@ jobs:
           path: outputs/
 
       - name: Check eval gate and rollback
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
         run: |
           python - <<'EOF'
           import json
@@ -241,6 +245,14 @@ jobs:
 
           print("\nEVAL GATE PASSED — proceeding to deploy")
           EOF
+
+      - name: Upload metrics.json to S3 for next run
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+        run: |
+          aws s3 cp outputs/metrics.json s3://$AWS_S3_BUCKET/models/latest/metrics.json
 
 
   # ---------------------------------------------------------------------------
